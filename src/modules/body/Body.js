@@ -17,16 +17,16 @@ class Body extends Component {
         thickness: 10,
         width: 100,
         rotation: 0,
-        x: 50,
-        y: 5,
+        x: 100,
+        y: 50,
       },
       bullet: {
         penetration: 20,
-        direction: 45,
+        direction: 0,
         damage: 100,
         // explosionDamage: 300,
-        x: 50,
-        y: 55,
+        x: 100,
+        y: 100,
       },
       output: {
         actualThickness: null,
@@ -87,18 +87,14 @@ class Body extends Component {
       bullet,
       output,
       output: {
-        actualThickness,
-        penetration,
-        damage,
+        message,
       },
     } = this.state;
-
-    const outputMessage = `Hitting ${actualThickness} armor with ${penetration} penetration results in ${damage} damage`;
 
     return (
       <div className="main">
         <div className="battlefield" >
-          <svg width="300" height="200">
+          <svg width="600" height="200">
             <Armor
               { ...armor }
             />
@@ -141,7 +137,7 @@ class Body extends Component {
           }
         </div>
         <div>
-          <p>Output: {outputMessage}</p>
+          <p>Output: {message}</p>
           <p>Tank hp: {hp}</p>
         </div>
       </div>

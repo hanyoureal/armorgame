@@ -15,7 +15,7 @@ function Armor(props) {
   const Transform = `rotate(${direction} ${Width/4} ${Height/4})`;
 
   const X2 = 0;
-  const Y2 = -100;
+  const Y2 = -1000;
 
   return (
     <g transform={`translate(${X}, ${Y})`}>

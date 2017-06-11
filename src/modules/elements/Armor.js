@@ -11,17 +11,19 @@ function Armor(props) {
 
   const Width = width;
   const Height = thickness;
-  const X = x - (Width/2);
-  const Y = y - (Height/2);
-  const Transform = `rotate(${rotation} ${Width/2} ${Height/2})`;
+  const X = x;
+  const Y = y;
+  const Rotate = `rotate(${rotation})`;
 
   return (
-    <g transform={`translate(${X}, ${Y})`}>
-      <rect
-        width={Width}
-        height={Height}
-        transform={Transform}
-        fill="black"
+    <g transform={`translate(${X}, ${Y}) ${Rotate}`}>
+      <line
+        strokeWidth={Height}
+        x1={-(Width/2)}
+        y1={Height/2}
+        x2={Width/2}
+        y2={Height/2}
+        stroke="black"
       />
     </g>
   );
