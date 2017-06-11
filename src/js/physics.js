@@ -11,6 +11,16 @@ function shoot(a, b) {
   if (damage < 0) damage = 0;
 
   console.log(`Hitting ${actualThickness} armor with ${b.penetration} penetration results in ${damage} damage`);
+
+  return {
+    actualThickness,
+    damage,
+    penetration: b.penetration,
+  };
+}
+
+function checkPosition(a, b) {
+
 }
 
 export default shoot;

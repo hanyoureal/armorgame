@@ -10,20 +10,28 @@ class Body extends Component {
     this.onChangeBulletProps = this.onChangeBulletProps.bind(this);
 
     this.state = {
+      tank: {
+        hp: 500,
+      },
       armor: {
-        thickness: 30,
-        width: 200,
+        thickness: 10,
+        width: 100,
         rotation: 0,
-        x: 36,
-        y: 80,
+        x: 50,
+        y: 5,
       },
       bullet: {
-        penetration: 35,
-        direction: 0,
+        penetration: 20,
+        direction: 45,
         damage: 100,
         // explosionDamage: 300,
-        x: 130,
-        y: 94,
+        x: 50,
+        y: 55,
+      },
+      output: {
+        actualThickness: null,
+        damage: null,
+        penetration: null,
       },
     };
   }
@@ -32,8 +40,18 @@ class Body extends Component {
     const {
       armor,
       bullet,
+      tank,
     } = this.state;
-    shoot(armor, bullet);
+    const shot = shoot(armor, bullet);
+    const tankHp = tank.hp - shot.damage;
+
+    this.setState({
+      output: shot,
+      tank: {
+        ...tank,
+        hp: tankHp,
+      },
+    });
   }
 
   onChangeArmorProps(e) {
@@ -62,9 +80,20 @@ class Body extends Component {
 
   render() {
     const {
+      tank: {
+        hp,
+      },
       armor,
       bullet,
+      output,
+      output: {
+        actualThickness,
+        penetration,
+        damage,
+      },
     } = this.state;
+
+    const outputMessage = `Hitting ${actualThickness} armor with ${penetration} penetration results in ${damage} damage`;
 
     return (
       <div className="main">
@@ -110,6 +139,10 @@ class Body extends Component {
               );
             })
           }
+        </div>
+        <div>
+          <p>Output: {outputMessage}</p>
+          <p>Tank hp: {hp}</p>
         </div>
       </div>
     );

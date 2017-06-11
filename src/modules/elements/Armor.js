@@ -9,15 +9,21 @@ function Armor(props) {
     y,
   } = props;
 
+  const Width = width;
+  const Height = thickness;
+  const X = x - (Width/2);
+  const Y = y - (Height/2);
+  const Transform = `rotate(${rotation} ${Width/2} ${Height/2})`;
+
   return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={thickness}
-      transform={`rotate(${rotation} ${(width/2)+x} ${(thickness/2)+y} )`}
-      fill="black"
-    />
+    <g transform={`translate(${X}, ${Y})`}>
+      <rect
+        width={Width}
+        height={Height}
+        transform={Transform}
+        fill="black"
+      />
+    </g>
   );
 };
 
