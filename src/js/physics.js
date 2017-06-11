@@ -37,29 +37,45 @@ function getIntersectionPoint(a, b) {
   const armorCoord = getArmorCoord(a);
   const bulletCoord = getBulletCoord(b);
   const isIntersected = checkIntersection(armorCoord, bulletCoord);
-  console.log(isIntersected);
+
   return isIntersected;
 }
 
 export default shoot;
 
-function getArmorCoord(a) {
-  console.log(a);
-  return {
-    x1: 1,
-    x2: 2,
-    y1: 1,
-    y2: 3,
+function getArmorCoord({ rotation, width, x, y }) {
+  const w = width/2;
+  const cos = Math.cos(rotation * D2rad);
+  const sin = Math.sin(rotation * D2rad);
+  const cosW = cos * w;
+  const sinW = sin * w;
+
+  const coord = {
+    x1: x + cosW,
+    x2: x - cosW,
+    y1: y + sinW,
+    y2: y - sinW,
   };
+
+  return coord;
 }
 
-function getBulletCoord(b) {
-  return {
-    x3: 5,
-    x4: 1,
-    y3: 1,
-    y4: 5,
+function getBulletCoord({ direction, x, y}) {
+  const w = 300;
+  const d = direction + 90;
+  const cos = Math.cos(d * D2rad);
+  const sin = Math.sin(d * D2rad);
+  const cosW = cos * w;
+  const sinW = sin * w;
+
+  const coord = {
+    x3: x + cosW,
+    x4: x - cosW,
+    y3: y + sinW,
+    y4: y - sinW,
   };
+
+  return coord;
 }
 
 function checkIntersection({ x1, y1, x2, y2 }, { x3, y3, x4, y4 }) {
