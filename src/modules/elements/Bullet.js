@@ -22,7 +22,7 @@ function Armor(props) {
   return (
     <g transform={`translate(${X}, ${Y})`}>
       <line
-        x1="0" y1="0" x2={0} y2={-Height/2}
+        x1="0" y1="0" x2={0} y2={-Height}
         stroke="black"
         transform={Transform}
         strokeWidth={calibre + 2}
@@ -34,8 +34,8 @@ function Armor(props) {
         strokeWidth={calibre}
       />
       <ellipse
-        rx={Height/6}
-        ry={Height/6}
+        rx={Height/4}
+        ry={Height/4}
         fill="black"
       />
     </g>
