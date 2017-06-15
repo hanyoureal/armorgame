@@ -10,15 +10,35 @@ class Body extends Component {
     this.onChangeBulletProps = this.onChangeBulletProps.bind(this);
 
     this.state = {
-      tank: {
-        hp: 500,
-      },
+      armorMap: [1, 2, 3],
       armor: {
-        thickness: 10,
-        width: 100,
-        rotation: 0,
-        x: 100,
-        y: 50,
+        1: {
+          id: 1,
+          name: 'Armor 1',
+          thickness: 10,
+          width: 100,
+          rotation: 0,
+          x: 100,
+          y: 50,
+        },
+        2: {
+          id: 2,
+          name: 'Armor 2',
+          thickness: 10,
+          width: 100,
+          rotation: 0,
+          x: 100,
+          y: 100,
+        },
+        3: {
+          id: 3,
+          name: 'Armor 3',
+          thickness: 10,
+          width: 100,
+          rotation: 0,
+          x: 100,
+          y: 150,
+        }
       },
       bullet: {
         penetration: 20,
@@ -28,40 +48,46 @@ class Body extends Component {
         x: 100,
         y: 100,
       },
-      output: {
-        actualThickness: null,
-        damage: null,
-        penetration: null,
-      },
+      output: [],
+      // output: {
+      //   actualThickness: null,
+      //   damage: null,
+      //   penetration: null,
+      // },
     };
   }
 
   shoot() {
     const {
+      armorMap,
       armor,
       bullet,
-      tank,
     } = this.state;
-    const shot = shoot(armor, bullet);
-    const tankHp = tank.hp - shot.damage;
+    const shot = armorMap.map((a) => shoot(armor[a], bullet));
 
     this.setState({
       output: shot,
-      tank: {
-        ...tank,
-        hp: tankHp,
-      },
     });
   }
 
   onChangeArmorProps(e) {
-    const value = e.currentTarget.value;
-    const param = e.currentTarget.dataset.param;
+    const {
+      armorMap,
+      armor,
+    } = this.state;
+    const target = e.currentTarget;
+
+    const value = target.value;
+    const param = target.dataset.param;
+    const id = target.dataset.id;
 
     this.setState({
       armor: {
         ...this.state.armor,
-        [param]: parseInt(value),
+        [id]: {
+          ...this.state.armor[id],
+          [param]: parseInt(value),
+        },
       },
     });
   }
@@ -80,24 +106,25 @@ class Body extends Component {
 
   render() {
     const {
-      tank: {
-        hp,
-      },
+      armorMap,
       armor,
       bullet,
       output,
-      output: {
-        message,
-      },
     } = this.state;
 
     return (
       <div className="main">
         <div className="battlefield" >
           <svg width="600" height="200">
-            <Armor
-              { ...armor }
-            />
+            {
+              armorMap.map((a, idx) => (
+                  <Armor
+                    key={idx}
+                    { ...armor[a] }
+                  />
+                )
+              )
+            }
             <Bullet
               { ...bullet }
             />
@@ -107,18 +134,28 @@ class Body extends Component {
           Shoot!
         </button>
         <div>
-          <span>Armor properties:</span>
           {
-            Object.keys(armor).map((key, idx) => {
-              return (
-                <PropInput
-                  key={idx}
-                  dataParam={key}
-                  dataValue={armor[key]}
-                  onDataChange={this.onChangeArmorProps}
-                />
-              );
-            })
+            armorMap.map((a, idx) => (
+              <div key={idx}>
+                <span>{armor[a].name}:</span>
+                  {
+                    Object.keys(armor[a]).map((key, idxx) => {
+                    return (
+                      (typeof armor[a][key] === 'number') ?
+                        <PropInput
+                          id={armor[a].id}
+                          key={idxx}
+                          dataParam={key}
+                          dataValue={armor[a][key]}
+                          onDataChange={this.onChangeArmorProps}
+                        />
+                      :
+                      null
+                    );
+                  })
+                }
+                </div>
+            ))
           }
         </div>
         <div>
@@ -137,8 +174,11 @@ class Body extends Component {
           }
         </div>
         <div>
-          <p>Output: {message}</p>
-          <p>Tank hp: {hp}</p>
+        {
+          output.map((o, idx) => (
+            <p key={idx}>Output: {o.message}</p>
+          )
+        )}
         </div>
       </div>
     );

@@ -13,8 +13,6 @@ function shoot(a, b) {
 
     if (damage < 0) damage = 0;
 
-    console.log(`Hitting ${actualThickness} armor with ${b.penetration} penetration results in ${damage} damage`);
-
     return {
       hit: true,
       actualThickness,
@@ -69,9 +67,9 @@ function getBulletCoord({ direction, x, y}) {
   const sinW = sin * w;
 
   const coord = {
-    x3: x + cosW,
+    x3: x,
     x4: x - cosW,
-    y3: y + sinW,
+    y3: y,
     y4: y - sinW,
   };
 
@@ -91,6 +89,6 @@ function checkIntersection({ x1, y1, x2, y2 }, { x3, y3, x4, y4 }) {
         seg1: ua >= 0 && ua <= 1,
         seg2: ub >= 0 && ub <= 1,
     };
-
+    console.log(result);
     return (result.seg1 && result.seg2);
 }
