@@ -7,17 +7,24 @@ function PropInput(props) {
     dataValue,
     onDataChange,
   } = props;
-
+  const max = dataParam === 'direction' ? 360 : 800;
   return (
     <div>
       <label style={{ width: "100px", display: "inline-block" }}>{dataParam}:</label>
-      <input
-        data-id={id}
-        type="number"
-        data-param={dataParam}
-        value={dataValue}
-        onChange={onDataChange}
-      />
+      {
+        dataParam !== 'id' ?
+          <input
+            data-id={id}
+            type="range"
+            max={max}
+            data-param={dataParam}
+            value={dataValue}
+            onChange={onDataChange}
+            title={dataValue}
+          />
+          :
+          <label>{dataValue}</label>
+      }
     </div>
   );
 };

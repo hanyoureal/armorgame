@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import shoot from '../../js/physics';
+import { shoot, getClosestItem } from '../../js/physics';
 import { Armor, PropInput, Bullet } from '../elements';
-
+let done = false;
 class Body extends Component {
   constructor() {
     super();
@@ -13,61 +13,88 @@ class Body extends Component {
       armorMap: [1, 2, 3],
       armor: {
         1: {
-          id: 1,
+          id: '1',
           name: 'Armor 1',
           thickness: 10,
           width: 100,
           rotation: 0,
+          iHp: 100,
+          hp: 100,
           x: 100,
           y: 50,
         },
         2: {
-          id: 2,
+          id: '2',
           name: 'Armor 2',
           thickness: 10,
           width: 100,
           rotation: 0,
+          iHp: 100,
+          hp: 100,
           x: 100,
           y: 100,
         },
         3: {
-          id: 3,
+          id: '3',
           name: 'Armor 3',
           thickness: 10,
           width: 100,
           rotation: 0,
+          iHp: 100,
+          hp: 100,
           x: 100,
           y: 150,
-        }
+        },
       },
       bullet: {
-        penetration: 20,
+        id: 'bullet',
         direction: 0,
+        penetration: 50,
+        calibre: 2,
         damage: 100,
-        // explosionDamage: 300,
+        range: 3000,
         x: 100,
-        y: 100,
+        y: 200,
       },
-      output: [],
-      // output: {
-      //   actualThickness: null,
-      //   damage: null,
-      //   penetration: null,
-      // },
     };
   }
 
-  shoot() {
-    const {
-      armorMap,
-      armor,
-      bullet,
-    } = this.state;
-    const shot = armorMap.map((a) => shoot(armor[a], bullet));
+  shoot({ armorMap, armor }, bullet, ignoreId) {
+    let newState = { armorMap, armor };
+    const closestItem = getClosestItem(armorMap, armor, bullet, ignoreId);
 
-    this.setState({
-      output: shot,
-    });
+    if (closestItem.actualItem) {
+      const shot = shoot(closestItem.actualItem, bullet);
+      let remainingHp = armor[shot.id].hp - shot.damage;
+      if (remainingHp < 0) remainingHp = 0;
+      newState = {
+        armor: {
+          ...armor,
+          [shot.id]: {
+            ...armor[shot.id],
+            hp: remainingHp,
+          },
+        },
+        armorMap,
+      };
+      const remainingPen = bullet.penetration - shot.actualThickness;
+      if (remainingPen > 0) {
+        let newBullet = { ...bullet };
+        newBullet.x = closestItem.X.x;
+        newBullet.y = closestItem.X.y;
+        newBullet.penetration = remainingPen;
+        this.shoot(newState, newBullet, shot.id);
+      } else {
+        done = true;
+      }
+    } else {
+      done = true;
+    }
+
+    if (done) {
+      this.setState({ ...this.state, ...newState });
+      done = false;
+    }
   }
 
   onChangeArmorProps(e) {
@@ -109,13 +136,59 @@ class Body extends Component {
       armorMap,
       armor,
       bullet,
-      output,
     } = this.state;
 
     return (
       <div className="main">
+        <div className="head">
+          <button onClick={() => { this.shoot(this.state, bullet) }}>
+            Shoot!
+          </button>
+        </div>
+        <div className="controls">
+          <div>
+            <h4>Bullet properties:</h4>
+            {
+              Object.keys(bullet).map((key, idx) => {
+                return (
+                  <PropInput
+                    key={idx}
+                    dataParam={key}
+                    dataValue={bullet[key]}
+                    onDataChange={this.onChangeBulletProps}
+                  />
+                );
+              })
+            }
+          </div>
+          <div>
+            {
+              armorMap.map((a, idx) => (
+                <div key={idx}>
+                  <h4>{armor[a].name}:</h4>
+                    {
+                      Object.keys(armor[a]).map((key, idxx) => {
+                      return (
+                        (typeof armor[a][key] === 'number') ?
+                          <PropInput
+                            id={armor[a].id}
+                            key={idxx}
+                            dataParam={key}
+                            dataValue={armor[a][key]}
+                            onDataChange={this.onChangeArmorProps}
+                          />
+                        :
+                        null
+                      );
+                    })
+                  }
+                  </div>
+              ))
+            }
+          </div>
+        </div>
         <div className="battlefield" >
-          <svg width="600" height="200">
+          <svg width="800" height="800">
             {
               armorMap.map((a, idx) => (
                   <Armor
@@ -129,56 +202,6 @@ class Body extends Component {
               { ...bullet }
             />
           </svg>
-        </div>
-        <button onClick={this.shoot}>
-          Shoot!
-        </button>
-        <div>
-          {
-            armorMap.map((a, idx) => (
-              <div key={idx}>
-                <span>{armor[a].name}:</span>
-                  {
-                    Object.keys(armor[a]).map((key, idxx) => {
-                    return (
-                      (typeof armor[a][key] === 'number') ?
-                        <PropInput
-                          id={armor[a].id}
-                          key={idxx}
-                          dataParam={key}
-                          dataValue={armor[a][key]}
-                          onDataChange={this.onChangeArmorProps}
-                        />
-                      :
-                      null
-                    );
-                  })
-                }
-                </div>
-            ))
-          }
-        </div>
-        <div>
-          <span>Bullet properties:</span>
-          {
-            Object.keys(bullet).map((key, idx) => {
-              return (
-                <PropInput
-                  key={idx}
-                  dataParam={key}
-                  dataValue={bullet[key]}
-                  onDataChange={this.onChangeBulletProps}
-                />
-              );
-            })
-          }
-        </div>
-        <div>
-        {
-          output.map((o, idx) => (
-            <p key={idx}>Output: {o.message}</p>
-          )
-        )}
         </div>
       </div>
     );

@@ -1,45 +1,52 @@
 const D2rad = Math.PI / 180;
 
-function shoot(a, b) {
-  const intersectionPoint = getIntersectionPoint(a, b);
+export function getClosestItem(armorMap, armor, bullet, ignoreId) {
+  let closestItem = null;
+  let actualItem = null;
+  let X = null;
+  armorMap.forEach((a) => {
+    if (armor[a].id !== ignoreId) {
+      X = getIntersectionPoint(armor[a], bullet);
+      if (X.seg1 && X.seg2) {
+        const distance = (Math.abs(X.x - bullet.x))+(Math.abs(X.y - bullet.y));
+        if (closestItem === null || distance < closestItem) {
+          actualItem = armor[a];
+          closestItem = distance
+        }
 
-  if (intersectionPoint) {
-    const actualDirection = b.direction + 90 - a.rotation;
-    const oppositeThickness = a.thickness / Math.tan(actualDirection * D2rad);
-    const actualThickness = Math.sqrt(Math.pow(a.thickness, 2) + Math.pow(oppositeThickness, 2));
+        closestItem = distance < closestItem ? distance : closestItem;
+      }
+    }
+  });
+  return ({ actualItem, X });
+}
 
-    const damagePercent = (b.penetration - actualThickness) / b.penetration * 100;
-    let damage = parseInt(b.damage * damagePercent / 100);
+export function shoot(a, b) {
+  const actualDirection = b.direction + 90 - a.rotation;
+  const oppositeThickness = a.thickness / Math.tan(actualDirection * D2rad);
+  const actualThickness = Math.sqrt(Math.pow(a.thickness, 2) + Math.pow(oppositeThickness, 2));
 
-    if (damage < 0) damage = 0;
+  const damagePercent = (b.penetration - actualThickness) / b.penetration * 100;
+  let damage = parseInt(b.damage * damagePercent / 100);
 
-    return {
-      hit: true,
-      actualThickness,
-      damage,
-      penetration: b.penetration,
-      message: `Hitting ${actualThickness} armor with ${b.penetration} penetration results in ${damage} damage`,
-    };
-  } else {
-    return {
-      hit: false,
-      actualThickness: 0,
-      damage: 0,
-      penetration: 0,
-      message: `Missed`,
-    };
-  }
+  if (damage < 0) damage = 0;
+
+  return {
+    id: a.id,
+    name: a.name,
+    hit: true,
+    actualThickness,
+    damage,
+    penetration: b.penetration,
+    message: `Hitting ${a.name}, ${actualThickness} armor with ${b.penetration} penetration results in ${damage} damage`,
+  };
 }
 
 function getIntersectionPoint(a, b) {
   const armorCoord = getArmorCoord(a);
   const bulletCoord = getBulletCoord(b);
-  const isIntersected = checkIntersection(armorCoord, bulletCoord);
-
-  return isIntersected;
+  return checkIntersection(armorCoord, bulletCoord);
 }
-
-export default shoot;
 
 function getArmorCoord({ rotation, width, x, y }) {
   const w = width/2;
@@ -58,13 +65,12 @@ function getArmorCoord({ rotation, width, x, y }) {
   return coord;
 }
 
-function getBulletCoord({ direction, x, y}) {
-  const w = 300;
+function getBulletCoord({ range, direction, x, y}) {
   const d = direction + 90;
   const cos = Math.cos(d * D2rad);
   const sin = Math.sin(d * D2rad);
-  const cosW = cos * w;
-  const sinW = sin * w;
+  const cosW = cos * range;
+  const sinW = sin * range;
 
   const coord = {
     x3: x,
@@ -77,18 +83,18 @@ function getBulletCoord({ direction, x, y}) {
 }
 
 function checkIntersection({ x1, y1, x2, y2 }, { x3, y3, x4, y4 }) {
-    const denom = (y4 - y3)*(x2 - x1) - (x4 - x3)*(y2 - y1);
-    if (denom == 0) {
-        return null;
-    }
-    const ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3))/denom;
-    const ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3))/denom;
-    const result = {
-        x: x1 + ua*(x2 - x1),
-        y: y1 + ua*(y2 - y1),
-        seg1: ua >= 0 && ua <= 1,
-        seg2: ub >= 0 && ub <= 1,
-    };
-    console.log(result);
-    return (result.seg1 && result.seg2);
+  const denom = (y4 - y3)*(x2 - x1) - (x4 - x3)*(y2 - y1);
+  if (denom == 0) {
+      return null;
+  }
+  const ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3))/denom;
+  const ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3))/denom;
+  const result = {
+      x: x1 + ua*(x2 - x1),
+      y: y1 + ua*(y2 - y1),
+      seg1: ua >= 0 && ua <= 1,
+      seg2: ub >= 0 && ub <= 1,
+  };
+
+  return result;
 }

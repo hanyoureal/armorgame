@@ -7,6 +7,8 @@ function Armor(props) {
     rotation,
     x,
     y,
+    hp,
+    iHp,
   } = props;
 
   const Width = width;
@@ -14,6 +16,8 @@ function Armor(props) {
   const X = x;
   const Y = y;
   const Rotate = `rotate(${rotation})`;
+  const red = parseInt(255 - (255*(hp/iHp)));
+  const color = `rgb(${red}, 0, 0)`;
 
   return (
     <g transform={`translate(${X}, ${Y}) ${Rotate}`}>
@@ -23,7 +27,7 @@ function Armor(props) {
         y1={Height/2}
         x2={Width/2}
         y2={Height/2}
-        stroke="black"
+        stroke={color}
       />
     </g>
   );
