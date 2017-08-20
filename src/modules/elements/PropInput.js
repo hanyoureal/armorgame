@@ -13,15 +13,26 @@ function PropInput(props) {
       <label style={{ width: "100px", display: "inline-block" }}>{dataParam}:</label>
       {
         dataParam !== 'id' ?
-          <input
-            data-id={id}
-            type="range"
-            max={max}
-            data-param={dataParam}
-            value={dataValue}
-            onChange={onDataChange}
-            title={dataValue}
-          />
+          <span>
+            <input
+              data-id={id}
+              type="range"
+              max={max}
+              data-param={dataParam}
+              value={dataValue}
+              onChange={onDataChange}
+              title={dataValue}
+            />
+            <input
+              style={{ width: '50px' }}
+              data-id={id}
+              type="number"
+              data-param={dataParam}
+              value={dataValue}
+              onChange={onDataChange}
+              title={dataValue}
+            />
+          </span>
           :
           <label>{dataValue}</label>
       }

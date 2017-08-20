@@ -17,11 +17,16 @@ function Armor(props) {
   const Y = y;
   const Rotate = `rotate(${rotation})`;
   const red = parseInt(255 - (255*(hp/iHp)));
-  const color = `rgb(${red}, 130, 30)`;
+  const color = `rgb(${red}, 100, 100)`;
 
   return (
-    <g transform={`translate(${X}, ${Y}) ${Rotate}`}>
+    <g
+      transform={`translate(${X}, ${Y}) ${Rotate}`}
+    >
       <line
+        onMouseEnter={() => {
+          console.log('hover' + hp);
+        }}
         strokeWidth={Height}
         x1={-Width/2}
         y1={0}

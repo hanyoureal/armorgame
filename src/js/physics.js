@@ -1,20 +1,42 @@
 const D2rad = Math.PI / 180;
 
+export function getHitAngle(actualItem, bullet) {
+  let hitAngle = Math.abs(actualItem.rotation - bullet.direction + 90);
+  while (hitAngle > 180) {
+    hitAngle = hitAngle - 180;
+  }
+
+  if (hitAngle < 90) {
+    hitAngle = 180 - hitAngle;
+  }
+  return hitAngle;
+}
+
+export function getHitAngleSign(actualItem, bullet) {
+  let minus = false;
+  let hitAngle = parseInt(actualItem.rotation - bullet.direction + 90);
+  while (hitAngle > 90) {
+    hitAngle = hitAngle - 90;
+    minus = !minus;
+  }
+  return minus;
+}
+
 export function getClosestItem(armorMap, armor, bullet, ignoreId) {
   let closestItem = null;
   let actualItem = null;
   let X = null;
+
   armorMap.forEach((a) => {
     if (armor[a].id !== ignoreId) {
-      X = getIntersectionPoint(armor[a], bullet);
-      if (X.seg1 && X.seg2) {
-        const distance = (Math.abs(X.x - bullet.x))+(Math.abs(X.y - bullet.y));
+      const checkX = getIntersectionPoint(armor[a], bullet);
+      if (checkX.seg1 && checkX.seg2) {
+        const distance = (Math.abs(checkX.x - bullet.x))+(Math.abs(checkX.y - bullet.y));
         if (closestItem === null || distance < closestItem) {
           actualItem = armor[a];
-          closestItem = distance
+          X = checkX;
+          closestItem = distance;
         }
-
-        closestItem = distance < closestItem ? distance : closestItem;
       }
     }
   });
@@ -25,7 +47,6 @@ export function shoot(a, b) {
   const actualDirection = b.direction + 90 - a.rotation;
   const oppositeThickness = a.thickness / Math.tan(actualDirection * D2rad);
   const actualThickness = Math.sqrt(Math.pow(a.thickness, 2) + Math.pow(oppositeThickness, 2));
-
   const damagePercent = (b.penetration - actualThickness) / b.penetration * 100;
   let damage = parseInt(b.damage * damagePercent / 100);
 
@@ -65,7 +86,7 @@ function getArmorCoord({ rotation, width, x, y }) {
   return coord;
 }
 
-function getBulletCoord({ range, direction, x, y}) {
+function getBulletCoord({ direction, range, x, y}) {
   const d = direction + 90;
   const cos = Math.cos(d * D2rad);
   const sin = Math.sin(d * D2rad);
@@ -78,7 +99,6 @@ function getBulletCoord({ range, direction, x, y}) {
     y3: y,
     y4: y - sinW,
   };
-
   return coord;
 }
 
