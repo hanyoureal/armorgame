@@ -16,7 +16,7 @@ class Body extends Component {
           id: '1',
           name: 'Armor 1',
           thickness: 10,
-          width: 100,
+          width: 120,
           rotation: 0,
           iHp: 200,
           hp: 200,
