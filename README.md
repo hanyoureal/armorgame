@@ -1,5 +1,6 @@
 # cvshare
-Online CV sharing project
+A game concept in 2d where you can build your own tank and place your armor and guns inside the tank
+Physics of armor penetration and projectile trajectory
 
 # Installation
 You will need to have installed nodejs.
